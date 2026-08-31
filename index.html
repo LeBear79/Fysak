@@ -304,7 +304,7 @@ const firebaseConfig = {
   projectId: "fysak-f7c30",
   storageBucket: "fysak-f7c30.firebasestorage.app",
   messagingSenderId: "807592446561",
-  appId: "1:807592446561:web:7e2b8286fcee0f5678ff820"
+  appId: "1:807592446561:web:7e2b8286fce0f5678ff820"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -324,7 +324,19 @@ loginForm.addEventListener('submit', async (e) => {
     );
     loginForm.reset();
   } catch (err) {
-    loginError.textContent = 'Kunne ikke logge inn. Kontroller e-post og passord.';
+    console.error('Firebase login error:', err);
+    const messages = {
+      'auth/invalid-credential': 'Feil e-postadresse eller passord.',
+      'auth/invalid-login-credentials': 'Feil e-postadresse eller passord.',
+      'auth/user-not-found': 'Fant ingen bruker med denne e-postadressen.',
+      'auth/wrong-password': 'Passordet er feil.',
+      'auth/invalid-email': 'E-postadressen er ikke gyldig.',
+      'auth/too-many-requests': 'For mange innloggingsforsøk. Vent litt og prøv igjen.',
+      'auth/network-request-failed': 'Nettverksfeil. Kontroller internettforbindelsen.',
+      'auth/unauthorized-domain': 'Dette domenet er ikke godkjent i Firebase Authorized domains.'
+    };
+    const friendly = messages[err.code] || 'Innloggingen mislyktes.';
+    loginError.textContent = `${friendly} (${err.code || 'ukjent feil'})`;
   }
 });
 
