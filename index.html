@@ -175,16 +175,34 @@
       .level-row{grid-template-columns:1fr}
       .app{padding:12px}
     }
+  
+    .auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+    .auth-card{width:min(420px,100%);background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+    .auth-card h1{margin-bottom:6px}.auth-card form{display:grid;gap:12px;margin-top:20px}.auth-error{color:var(--danger);min-height:1.2em;font-size:.9rem}.user-badge{font-size:.85rem;color:var(--muted);align-self:center}
   </style>
 </head>
 <body>
-<div class="app">
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <h1>FAH – vurderingsverktøy</h1>
+    <div class="subtitle">Logg inn for å åpne verktøyet</div>
+    <form id="loginForm">
+      <label><span>E-post</span><input id="loginEmail" type="email" autocomplete="username" required></label>
+      <label><span>Passord</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Logg inn</button>
+      <div id="loginError" class="auth-error" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
+<div id="mainApp" class="app" hidden>
   <header>
     <div>
       <h1>FAH – vurderingsverktøy</h1>
       <div class="subtitle">Fysisk aktivitet og helse – ungdomsskolen</div>
     </div>
     <div class="top-actions">
+      <span id="userBadge" class="user-badge"></span>
+      <button id="logoutBtn">Logg ut</button>
       <button id="exportBtn">Eksporter data</button>
       <button id="importBtn">Importer data</button>
       <input id="importFile" type="file" accept=".json,application/json" hidden>
@@ -276,6 +294,54 @@
     Data lagres lokalt i nettleseren på denne enheten. Bruk eksportfunksjonen for sikkerhetskopi.
   </div>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDi2aVSa6Aqc_nS-ykCj0Z_E2GAYwxVR18",
+  authDomain: "fysak-f7c30.firebaseapp.com",
+  projectId: "fysak-f7c30",
+  storageBucket: "fysak-f7c30.firebasestorage.app",
+  messagingSenderId: "807592446561",
+  appId: "1:807592446561:web:7e2b8286fcee0f5678ff820"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const authScreen = document.getElementById('authScreen');
+const mainApp = document.getElementById('mainApp');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const userBadge = document.getElementById('userBadge');
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginError.textContent = '';
+  try {
+    await auth.signInWithEmailAndPassword(
+      document.getElementById('loginEmail').value.trim(),
+      document.getElementById('loginPassword').value
+    );
+    loginForm.reset();
+  } catch (err) {
+    loginError.textContent = 'Kunne ikke logge inn. Kontroller e-post og passord.';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    authScreen.hidden = true;
+    mainApp.hidden = false;
+    userBadge.textContent = user.email || 'Innlogget';
+  } else {
+    mainApp.hidden = true;
+    authScreen.hidden = false;
+    userBadge.textContent = '';
+  }
+});
+</script>
 
 <script>
 const STORAGE_KEY = 'fah-vurderingsverktoy-v1';
