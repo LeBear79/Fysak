@@ -7,187 +7,81 @@
   <title>FAH – vurderingsverktøy</title>
   <style>
     :root{
-      --bg:#f4f7f5;
-      --card:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --border:#d9e1dc;
-      --accent:#1f5f4a;
-      --accent-soft:#e5f0eb;
-      --danger:#b42318;
-      --shadow:0 8px 24px rgba(0,0,0,.06);
+      --bg:#f4f7f5; --card:#fff; --text:#1f2937; --muted:#6b7280;
+      --border:#d9e1dc; --accent:#1f5f4a; --accent-soft:#e5f0eb;
+      --danger:#b42318; --warning:#8a4b08; --shadow:0 8px 24px rgba(0,0,0,.06);
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-    .app{max-width:1100px;margin:0 auto;padding:20px}
-    header{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-      justify-content:space-between;
-      margin-bottom:18px;
-      flex-wrap:wrap;
-    }
-    h1{margin:0;font-size:clamp(1.5rem,3vw,2.2rem)}
-    .subtitle{color:var(--muted);margin-top:6px}
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-    button,select,input,textarea{
-      font:inherit;
-    }
-    button{
-      cursor:pointer;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--text);
-      border-radius:10px;
-      padding:10px 14px;
-      min-height:44px;
-    }
+    [hidden]{display:none!important}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    button,select,input,textarea{font:inherit}
+    button{cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:10px;padding:10px 14px;min-height:44px}
     button:hover{border-color:#aab8af}
-    button.primary{
-      background:var(--accent);
-      color:white;
-      border-color:var(--accent);
-    }
-    button.danger{
-      color:var(--danger);
-    }
-    .tab.active{
-      background:var(--accent-soft);
-      border-color:var(--accent);
-    }
-    .panel{display:none}
-    .panel.active{display:block}
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:16px;
-      box-shadow:var(--shadow);
-      margin-bottom:14px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:12px;
-    }
+    button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    button.danger{color:var(--danger)}
+    button.small-btn{padding:6px 10px;min-height:34px;font-size:.88rem}
+    button.selected{outline:2px solid var(--accent);background:var(--accent-soft)}
+    .app{max-width:1180px;margin:0 auto;padding:20px}
+    header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap}
+    h1{margin:0;font-size:clamp(1.5rem,3vw,2.2rem)}
+    .subtitle,.muted{color:var(--muted)}
+    .subtitle{margin-top:6px}
+    .top-actions,.actions,.tabs,.tags,.attendance-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .tabs{margin-bottom:18px}
+    .tab.active{background:var(--accent-soft);border-color:var(--accent)}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
     .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
     label{display:block;font-weight:600}
     label span{display:block;margin-bottom:6px}
-    input,select,textarea{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:11px 12px;
-      background:#fff;
-      color:var(--text);
-      min-height:44px;
-    }
+    input,select,textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:11px 12px;background:#fff;color:var(--text);min-height:44px}
     textarea{min-height:100px;resize:vertical}
-    .muted{color:var(--muted)}
     .section-title{font-size:1.05rem;font-weight:700;margin-bottom:10px}
     .criteria-title{font-weight:700}
     .criteria-goal{color:var(--muted);font-size:.92rem;margin-top:4px}
-    .level-grid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:8px;
-      margin-top:12px;
-    }
-    .level-btn.selected,
-    .tag-btn.selected{
-      outline:2px solid var(--accent);
-      background:var(--accent-soft);
-    }
-    .tags{display:flex;flex-wrap:wrap;gap:8px}
-    .tag-btn{
-      border-radius:999px;
-      padding:8px 12px;
-      min-height:auto;
-    }
-    .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .criterion-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .criterion-check{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border);border-radius:10px;padding:10px;background:#fff}
+    .criterion-check input{width:auto;min-height:auto;margin-top:4px}
+    .level-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+    .level-btn.selected,.tag-btn.selected{outline:2px solid var(--accent);background:var(--accent-soft)}
+    .tag-btn{border-radius:999px;padding:8px 12px;min-height:auto}
     .status{color:var(--muted)}
-    .student-row,.history-row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-start;
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:10px 12px;
-      margin-bottom:8px;
-      background:#fff;
-    }
-    .profile-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-    .meter{
-      height:8px;
-      background:#e6ebe8;
-      border-radius:999px;
-      overflow:hidden;
-      margin:8px 0 5px;
-    }
-    .meter span{
-      display:block;
-      height:100%;
-      background:var(--accent);
-    }
-    .level-row{
-      display:grid;
-      grid-template-columns:110px 1fr;
-      gap:10px;
-      padding:8px 0;
-      border-top:1px solid #eef2ef;
-    }
+    .student-row,.history-row,.session-row,.attendance-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff}
+    .attendance-row{align-items:center}
+    .attendance-name{font-weight:600;min-width:160px}
+    .attendance-state{font-size:.86rem;color:var(--muted)}
+    .attendance-present{background:#edf7f1!important;border-color:#88b79d!important}
+    .attendance-absent{background:#fff1f0!important;border-color:#e3a19a!important}
+    .attendance-exempt{background:#fff8e8!important;border-color:#d7b46a!important}
+    .profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .meter{height:8px;background:#e6ebe8;border-radius:999px;overflow:hidden;margin:8px 0 5px}
+    .meter span{display:block;height:100%;background:var(--accent)}
+    .level-row{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 0;border-top:1px solid #eef2ef}
     .level-row:first-of-type{border-top:none}
-    .pill{
-      display:inline-block;
-      font-size:.8rem;
-      background:#eef3f0;
-      border-radius:999px;
-      padding:4px 8px;
-      margin:3px 4px 0 0;
-    }
+    .pill{display:inline-block;font-size:.8rem;background:#eef3f0;border-radius:999px;padding:4px 8px;margin:3px 4px 0 0}
     .small{font-size:.85rem}
-    .footer-note{
-      color:var(--muted);
-      font-size:.82rem;
-      margin-top:18px;
-      padding-top:12px;
-      border-top:1px solid var(--border);
-    }
-    .top-actions{display:flex;gap:8px;flex-wrap:wrap}
-    @media (max-width:760px){
-      .grid,.grid.two,.profile-grid,.level-grid{grid-template-columns:1fr}
-      .level-row{grid-template-columns:1fr}
-      .app{padding:12px}
-    }
-  
-
-    /* Sørger for at skjulte deler faktisk er skjult */
-    [hidden]{
-      display:none !important;
-    }
-
+    .notice{padding:12px 14px;border-radius:10px;background:#f8faf9;border:1px solid var(--border);margin-bottom:12px}
+    .notice.warning{background:#fff8e8;color:#6d4308}
+    .session-banner{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .session-title{font-weight:700}
+    .footer-note{color:var(--muted);font-size:.82rem;margin-top:18px;padding-top:12px;border-top:1px solid var(--border)}
+    .user-badge{font-size:.85rem;color:var(--muted)}
     .auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
     .auth-card{width:min(420px,100%);background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
-    .auth-card h1{margin-bottom:6px}.auth-card form{display:grid;gap:12px;margin-top:20px}.auth-error{color:var(--danger);min-height:1.2em;font-size:.9rem}.user-badge{font-size:.85rem;color:var(--muted);align-self:center}
+    .auth-card form{display:grid;gap:12px;margin-top:20px}
+    .auth-error{color:var(--danger);min-height:1.2em;font-size:.9rem}
+    @media(max-width:780px){
+      .grid,.grid.two,.grid.four,.profile-grid,.level-grid,.criterion-picker{grid-template-columns:1fr}
+      .app{padding:12px}
+      .attendance-row{align-items:flex-start;flex-direction:column}
+      .attendance-name{min-width:0}
+    }
   </style>
 </head>
 <body>
+
 <div id="authScreen" class="auth-screen">
   <div class="auth-card">
     <h1>FAH – vurderingsverktøy</h1>
@@ -200,6 +94,7 @@
     </form>
   </div>
 </div>
+
 <div id="mainApp" class="app" hidden>
   <header>
     <div>
@@ -216,19 +111,52 @@
   </header>
 
   <nav class="tabs" aria-label="Hovedmeny">
-    <button class="tab active" data-tab="register">Registrer</button>
+    <button class="tab active" data-tab="lesson">Time</button>
+    <button class="tab" data-tab="register">Registrer</button>
     <button class="tab" data-tab="profile">Elevprofil</button>
     <button class="tab" data-tab="criteria">Kriterier</button>
     <button class="tab" data-tab="students">Elever</button>
   </nav>
 
-  <section id="register" class="panel active">
+  <section id="lesson" class="panel active">
     <div class="card">
-      <div class="grid">
-        <label><span>Elev</span><select id="studentSelect"></select></label>
-        <label><span>Dato</span><input id="dateInput" type="date"></label>
-        <label><span>Aktivitet</span><input id="activityInput" type="text" placeholder="F.eks. styrke, innebandy, tur"></label>
+      <div class="section-title">Opprett ny time</div>
+      <div class="grid two">
+        <label><span>Dato</span><input id="lessonDate" type="date"></label>
+        <label><span>Aktivitet</span><input id="lessonActivity" type="text" placeholder="F.eks. innebandy, styrke, matlaging"></label>
       </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Velg kriterier som gjelder i denne timen</div>
+      <div class="muted small" style="margin-bottom:10px">Kun kriteriene du huker av blir synlige når du vurderer elevene i denne timen.</div>
+      <div id="lessonCriteria" class="criterion-picker"></div>
+      <div class="actions" style="margin-top:12px">
+        <button id="selectCommonBtn">Vanlig aktivitetsøkt</button>
+        <button id="selectAllBtn">Velg alle</button>
+        <button id="clearCriteriaBtn">Fjern alle</button>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-bottom:16px">
+      <button id="createLessonBtn" class="primary">Opprett og start time</button>
+      <span id="lessonStatus" class="status" aria-live="polite"></span>
+    </div>
+
+    <div id="activeLessonCard"></div>
+
+    <div class="card">
+      <div class="section-title">Tidligere timer</div>
+      <div id="sessionList"></div>
+    </div>
+  </section>
+
+  <section id="register" class="panel">
+    <div id="registerSessionBanner"></div>
+
+    <div class="card">
+      <label><span>Elev</span><select id="studentSelect"></select></label>
+      <div id="studentAttendanceInfo" class="small muted" style="margin-top:8px"></div>
     </div>
 
     <div class="card">
@@ -246,7 +174,7 @@
 
     <div class="actions">
       <button id="saveBtn" class="primary">Lagre observasjon</button>
-      <button id="resetBtn">Nullstill</button>
+      <button id="resetBtn">Nullstill vurdering</button>
       <span id="saveStatus" class="status" aria-live="polite"></span>
     </div>
   </section>
@@ -262,6 +190,7 @@
       </div>
     </div>
 
+    <div id="attendanceSummary"></div>
     <div id="profileSummary" class="profile-grid"></div>
 
     <div class="card">
@@ -273,9 +202,7 @@
   <section id="criteria" class="panel">
     <div class="card">
       <div class="section-title">Vurderingsnivåer</div>
-      <div class="muted small">
-        Nivåene er ment som støtte for lærerens profesjonelle vurdering. De skal ikke brukes som automatiske karaktergrenser.
-      </div>
+      <div class="muted small">Nivåene er støtte for lærerens profesjonelle vurdering og brukes ikke som automatiske karaktergrenser.</div>
     </div>
     <div id="criteriaList"></div>
   </section>
@@ -294,10 +221,29 @@
         <div id="studentList"></div>
       </div>
     </div>
+
+    <div class="card">
+      <div class="section-title">Hurtigobservasjoner</div>
+      <div class="muted small" style="margin-bottom:10px">
+        Legg til egne hurtigobservasjoner eller fjern dem du ikke ønsker å bruke.
+        Tidligere registreringer blir ikke slettet selv om en hurtigobservasjon fjernes her.
+      </div>
+      <div class="grid two">
+        <label>
+          <span>Ny hurtigobservasjon</span>
+          <input id="newTagInput" type="text" placeholder="F.eks. Tar gode valg i aktivitet">
+        </label>
+        <div class="actions" style="align-self:end">
+          <button id="addTagBtn" class="primary">Legg til</button>
+          <button id="resetTagsBtn">Tilbakestill standardliste</button>
+        </div>
+      </div>
+      <div id="tagManagerList" style="margin-top:14px"></div>
+    </div>
   </section>
 
   <div class="footer-note">
-    Data lagres lokalt i nettleseren på denne enheten. Bruk eksportfunksjonen for sikkerhetskopi.
+    Elevdata, vurderinger og fravær lagres lokalt i nettleseren på denne enheten. Firebase brukes bare til innlogging. Bruk eksportfunksjonen for sikkerhetskopi.
   </div>
 </div>
 
@@ -320,40 +266,37 @@ const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 const userBadge = document.getElementById('userBadge');
 
-loginForm.addEventListener('submit', async (e) => {
+loginForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   loginError.textContent = '';
-  try {
+  try{
     await auth.signInWithEmailAndPassword(
       document.getElementById('loginEmail').value.trim(),
       document.getElementById('loginPassword').value
     );
     loginForm.reset();
-  } catch (err) {
+  }catch(err){
     console.error('Firebase login error:', err);
     const messages = {
-      'auth/invalid-credential': 'Feil e-postadresse eller passord.',
-      'auth/invalid-login-credentials': 'Feil e-postadresse eller passord.',
-      'auth/user-not-found': 'Fant ingen bruker med denne e-postadressen.',
-      'auth/wrong-password': 'Passordet er feil.',
-      'auth/invalid-email': 'E-postadressen er ikke gyldig.',
-      'auth/too-many-requests': 'For mange innloggingsforsøk. Vent litt og prøv igjen.',
-      'auth/network-request-failed': 'Nettverksfeil. Kontroller internettforbindelsen.',
-      'auth/unauthorized-domain': 'Dette domenet er ikke godkjent i Firebase Authorized domains.'
+      'auth/invalid-credential':'Feil e-postadresse eller passord.',
+      'auth/invalid-login-credentials':'Feil e-postadresse eller passord.',
+      'auth/user-not-found':'Fant ingen bruker med denne e-postadressen.',
+      'auth/wrong-password':'Passordet er feil.',
+      'auth/invalid-email':'E-postadressen er ikke gyldig.',
+      'auth/too-many-requests':'For mange innloggingsforsøk. Vent litt og prøv igjen.',
+      'auth/network-request-failed':'Nettverksfeil. Kontroller internettforbindelsen.',
+      'auth/unauthorized-domain':'Dette domenet er ikke godkjent i Firebase Authorized domains.'
     };
-    const friendly = messages[err.code] || 'Innloggingen mislyktes.';
-    loginError.textContent = `${friendly} (${err.code || 'ukjent feil'})`;
+    loginError.textContent = `${messages[err.code] || 'Innloggingen mislyktes.'} (${err.code || 'ukjent feil'})`;
   }
 });
-
-document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
-
-auth.onAuthStateChanged((user) => {
-  if (user) {
+document.getElementById('logoutBtn').addEventListener('click', ()=>auth.signOut());
+auth.onAuthStateChanged(user=>{
+  if(user){
     authScreen.hidden = true;
     mainApp.hidden = false;
     userBadge.textContent = user.email || 'Innlogget';
-  } else {
+  }else{
     mainApp.hidden = true;
     authScreen.hidden = false;
     userBadge.textContent = '';
@@ -362,442 +305,562 @@ auth.onAuthStateChanged((user) => {
 </script>
 
 <script>
-const STORAGE_KEY = 'fah-vurderingsverktoy-v1';
+const STORAGE_KEY = 'fah-vurderingsverktoy-v2';
 
-const levels = ['Lite godt','Nokså godt','Godt','Svært godt'];
+const levels = ['Lite godt','Nokså godt','God','Svært god'];
 
 const criteria = [
-  {
-    id:'effort',
-    name:'Innsats og utholdenhet',
-    goal:'Deltar aktivt, prøver etter beste evne og holder innsatsen oppe.',
-    desc:[
-      'Viser liten innsats og gir ofte opp når noe blir krevende.',
-      'Viser noe innsats, men innsatsen varierer og eleven trenger tidvis støtte.',
-      'Viser god og stabil innsats og arbeider videre når noe er krevende.',
-      'Viser svært god og stabil innsats, utfordrer seg selv og arbeider målrettet over tid.'
-    ]
-  },
-  {
-    id:'development',
-    name:'Øving og utvikling',
-    goal:'Øver på aktiviteter og arbeider med egen utvikling ut fra egne forutsetninger.',
-    desc:[
-      'Øver i liten grad og viser liten vilje til å arbeide med egen utvikling.',
-      'Øver og viser noe utvikling, men arbeidet er ikke alltid målrettet.',
-      'Øver målrettet og viser god utvikling ut fra egne forutsetninger.',
-      'Øver svært målrettet, bruker tilbakemeldinger godt og viser tydelig utvikling.'
-    ]
-  },
-  {
-    id:'independence',
-    name:'Selvstendighet og ansvar',
-    goal:'Kommer i gang, tar ansvar og gjennomfører oppgaver på en selvstendig måte.',
-    desc:[
-      'Trenger mye hjelp for å komme i gang og gjennomføre.',
-      'Arbeider noe selvstendig, men trenger jevnlig støtte og påminnelser.',
-      'Arbeider godt selvstendig og tar ansvar for egne oppgaver.',
-      'Arbeider svært selvstendig, tar initiativ og gjør gode valg uten mye veiledning.'
-    ]
-  },
-  {
-    id:'cooperation',
-    name:'Samarbeid og inkludering',
-    goal:'Samarbeider, inkluderer og oppmuntrer andre i aktivitet.',
-    desc:[
-      'Samarbeider i liten grad og bidrar lite til inkludering.',
-      'Samarbeider med andre og viser noe evne til å inkludere og oppmuntre.',
-      'Samarbeider godt, inkluderer andre og bidrar positivt i gruppen.',
-      'Samarbeider svært godt, tar aktivt ansvar for inkludering og bidrar til at andre lykkes.'
-    ]
-  },
-  {
-    id:'movement',
-    name:'Gjennomføring av aktiviteter',
-    goal:'Gjennomfører varierte bevegelsesaktiviteter alene og sammen med andre.',
-    desc:[
-      'Gjennomfører aktiviteter i liten grad og trenger mye støtte.',
-      'Gjennomfører flere aktiviteter, men mestring og deltakelse varierer.',
-      'Gjennomfører varierte aktiviteter på en god måte og tilpasser seg ulike situasjoner.',
-      'Gjennomfører aktiviteter svært godt og viser god tilpasning, forståelse og trygghet.'
-    ]
-  },
-  {
-    id:'food',
-    name:'Kosthold og måltider',
-    goal:'Tilbereder enkle helsefremmende måltider og kan begrunne relevante valg.',
-    desc:[
-      'Viser liten forståelse for helsefremmende matvalg og trenger mye støtte.',
-      'Kan gjøre noen relevante matvalg og gjennomføre deler av arbeidet.',
-      'Gjør gode helsefremmende valg og kan forklare hvorfor de er gode.',
-      'Arbeider svært selvstendig og begrunner matvalg og måltidsfellesskap på en nyansert måte.'
-    ]
-  },
-  {
-    id:'health',
-    name:'Helse og refleksjon',
-    goal:'Reflekterer over sammenhenger mellom fysisk aktivitet, kosthold og fysisk og psykisk helse.',
-    desc:[
-      'Viser liten forståelse for sammenhengene mellom aktivitet, kosthold og helse.',
-      'Kan beskrive noen enkle sammenhenger.',
-      'Forklarer og drøfter relevante sammenhenger med gode eksempler.',
-      'Drøfter sammenhengene svært godt, ser flere sider og bruker relevante faglige begrunnelser.'
-    ]
-  }
+  {id:'effort',name:'Innsats og utholdenhet',goal:'Deltar aktivt, prøver etter beste evne og holder innsatsen oppe.',desc:[
+    'Viser liten innsats og gir ofte opp når noe blir krevende.',
+    'Viser noe innsats, men innsatsen varierer og eleven trenger tidvis støtte.',
+    'Viser god og stabil innsats og arbeider videre når noe er krevende.',
+    'Viser svært god og stabil innsats, utfordrer seg selv og arbeider målrettet over tid.'
+  ]},
+  {id:'development',name:'Øving og utvikling',goal:'Øver på aktiviteter og arbeider med egen utvikling ut fra egne forutsetninger.',desc:[
+    'Øver i liten grad og viser liten vilje til å arbeide med egen utvikling.',
+    'Øver og viser noe utvikling, men arbeidet er ikke alltid målrettet.',
+    'Øver målrettet og viser god utvikling ut fra egne forutsetninger.',
+    'Øver svært målrettet, bruker tilbakemeldinger godt og viser tydelig utvikling.'
+  ]},
+  {id:'independence',name:'Selvstendighet og ansvar',goal:'Kommer i gang, tar ansvar og gjennomfører oppgaver på en selvstendig måte.',desc:[
+    'Trenger mye hjelp for å komme i gang og gjennomføre.',
+    'Arbeider noe selvstendig, men trenger jevnlig støtte og påminnelser.',
+    'Arbeider godt selvstendig og tar ansvar for egne oppgaver.',
+    'Arbeider svært selvstendig, tar initiativ og gjør gode valg uten mye veiledning.'
+  ]},
+  {id:'cooperation',name:'Samarbeid og inkludering',goal:'Samarbeider, inkluderer og oppmuntrer andre i aktivitet.',desc:[
+    'Samarbeider i liten grad og bidrar lite til inkludering.',
+    'Samarbeider med andre og viser noe evne til å inkludere og oppmuntre.',
+    'Samarbeider godt, inkluderer andre og bidrar positivt i gruppen.',
+    'Samarbeider svært godt, tar aktivt ansvar for inkludering og bidrar til at andre lykkes.'
+  ]},
+  {id:'movement',name:'Gjennomføring av aktiviteter',goal:'Løser og gjennomfører varierte bevegelsesoppgaver alene og sammen med andre ut fra egne forutsetninger.',desc:[
+    'Deltar i liten grad og trenger mye støtte for å komme i gang med bevegelsesoppgavene.',
+    'Deltar og løser noen bevegelsesoppgaver, men trenger tidvis støtte.',
+    'Deltar aktivt og løser varierte bevegelsesoppgaver godt ut fra egne forutsetninger.',
+    'Deltar svært aktivt, tilpasser seg ulike oppgaver og viser god forståelse for hvordan de kan løses ut fra egne forutsetninger.'
+  ]},
+  {id:'food',name:'Kosthold og måltider',goal:'Tilbereder enkle helsefremmende måltider og reflekterer over verdien av å spise sammen med andre.',desc:[
+    'Viser liten forståelse for helsefremmende matvalg og trenger mye støtte.',
+    'Kan gjøre noen relevante matvalg og gjennomføre deler av arbeidet.',
+    'Gjør gode helsefremmende valg og kan forklare hvorfor de er gode.',
+    'Arbeider svært selvstendig og begrunner matvalg og måltidsfellesskap på en nyansert måte.'
+  ]},
+  {id:'health',name:'Helse og refleksjon',goal:'Drøfter hvordan fysisk aktivitet og kosthold kan bidra til god fysisk og psykisk helse.',desc:[
+    'Viser liten forståelse for sammenhengene mellom aktivitet, kosthold og helse.',
+    'Kan beskrive noen enkle sammenhenger.',
+    'Forklarer og drøfter relevante sammenhenger med gode eksempler.',
+    'Drøfter sammenhengene svært godt, ser flere sider og bruker relevante faglige begrunnelser.'
+  ]}
 ];
 
-const tags = [
-  'God innsats',
-  'Utfordrer seg selv',
-  'Gir ikke opp',
-  'Jobber selvstendig',
-  'Tar initiativ',
-  'Samarbeider godt',
-  'Inkluderer andre',
-  'Oppmuntrer andre',
-  'Viser utvikling',
-  'God refleksjon',
-  'Trenger støtte for å komme i gang',
-  'Må utfordre seg mer',
-  'Kan bidra mer i gruppen'
+const DEFAULT_TAGS = [
+  'God innsats','Utfordrer seg selv','Gir ikke opp','Jobber selvstendig',
+  'Tar initiativ','Samarbeider godt','Inkluderer andre','Oppmuntrer andre',
+  'Viser utvikling','God refleksjon','Trenger støtte for å komme i gang',
+  'Må utfordre seg mer','Kan bidra mer i gruppen'
 ];
 
 let state = loadState();
 let selectedLevels = {};
 let selectedTags = new Set();
 
-function defaultState(){
-  return {
-    students:['Eksempel elev'],
-    records:[]
-  };
+function today(){
+  const d = new Date();
+  const local = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+  return local.toISOString().slice(0,10);
 }
+function esc(str=''){
+  return String(str).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
+function uid(){ return Date.now() + Math.floor(Math.random()*10000); }
 
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-    if(!Array.isArray(parsed.students) || !Array.isArray(parsed.records)) return defaultState();
-    return parsed;
-  }catch{
-    return defaultState();
+  let parsed = null;
+  try{ parsed = JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch{}
+  if(!parsed){
+    try{
+      const old = JSON.parse(localStorage.getItem('fah-vurderingsverktoy-v1'));
+      if(old) parsed = old;
+    }catch{}
   }
+  const result = parsed || {students:['Eksempel elev'],records:[]};
+  if(!Array.isArray(result.students)) result.students = ['Eksempel elev'];
+  if(!Array.isArray(result.records)) result.records = [];
+  if(!Array.isArray(result.sessions)) result.sessions = [];
+  if(!Array.isArray(result.tags) || !result.tags.length) result.tags = [...DEFAULT_TAGS];
+  if(!result.activeSessionId) result.activeSessionId = null;
+  return result;
 }
-
 function saveState(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
-
-function esc(value){
-  return String(value).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+function activeSession(){
+  return state.sessions.find(s=>String(s.id)===String(state.activeSessionId)) || null;
+}
+function attendanceLabel(v){
+  return v==='absent' ? 'Fravær' : v==='exempt' ? 'Fritatt' : 'Til stede';
+}
+function setTab(id){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===id));
+  if(id==='profile') renderProfile();
+  if(id==='lesson') renderLesson();
+  if(id==='register') renderRegisterContext();
 }
 
-function today(){
-  return new Date().toISOString().slice(0,10);
+function renderLessonCriteria(){
+  const common = new Set(['effort','development','independence','cooperation','movement']);
+  document.getElementById('lessonCriteria').innerHTML = criteria.map(c=>`
+    <label class="criterion-check">
+      <input type="checkbox" value="${c.id}" ${common.has(c.id)?'checked':''}>
+      <span>
+        <strong>${esc(c.name)}</strong>
+        <div class="small muted">${esc(c.goal)}</div>
+      </span>
+    </label>
+  `).join('');
 }
+function selectedLessonCriteria(){
+  return [...document.querySelectorAll('#lessonCriteria input:checked')].map(x=>x.value);
+}
+function createLesson(){
+  const date = document.getElementById('lessonDate').value || today();
+  const activity = document.getElementById('lessonActivity').value.trim();
+  const chosen = selectedLessonCriteria();
+  const status = document.getElementById('lessonStatus');
 
-document.getElementById('dateInput').value = today();
+  if(!activity){ status.textContent='Skriv inn aktivitet for timen.'; return; }
+  if(!chosen.length){ status.textContent='Velg minst ett kriterium.'; return; }
+
+  const attendance = {};
+  state.students.forEach(name=>attendance[name]='present');
+
+  const session = {id:uid(),date,activity,criteria:chosen,attendance,createdAt:Date.now()};
+  state.sessions.push(session);
+  state.activeSessionId = session.id;
+  saveState();
+  status.textContent='Timen er opprettet.';
+  document.getElementById('lessonActivity').value='';
+  renderLesson();
+  renderRegisterContext();
+}
+function renderLesson(){
+  const session = activeSession();
+  const activeBox = document.getElementById('activeLessonCard');
+
+  if(!session){
+    activeBox.innerHTML = `<div class="notice warning">Ingen aktiv time. Opprett en ny time eller velg en tidligere time.</div>`;
+  }else{
+    activeBox.innerHTML = `
+      <div class="card">
+        <div class="session-banner">
+          <div>
+            <div class="section-title" style="margin-bottom:2px">Aktiv time</div>
+            <div class="session-title">${esc(session.activity)}</div>
+            <div class="small muted">${esc(session.date)} · ${session.criteria.length} kriterier</div>
+          </div>
+          <button class="primary" data-go-register>Gå til vurdering</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Fravær</div>
+        <div class="muted small" style="margin-bottom:10px">Alle settes automatisk som «Til stede». Endre bare de som har fravær eller er fritatt.</div>
+        <div id="attendanceList">${renderAttendanceRows(session)}</div>
+      </div>
+    `;
+  }
+
+  const sorted = [...state.sessions].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||b.id)-(a.createdAt||a.id));
+  document.getElementById('sessionList').innerHTML = sorted.length ? sorted.map(s=>`
+    <div class="session-row">
+      <div>
+        <strong>${esc(s.activity)}</strong>
+        <div class="small muted">${esc(s.date)} · ${s.criteria?.length||0} kriterier</div>
+        <div class="small" style="margin-top:4px">
+          Fravær: ${Object.values(s.attendance||{}).filter(v=>v==='absent').length}
+          · Fritatt: ${Object.values(s.attendance||{}).filter(v=>v==='exempt').length}
+        </div>
+      </div>
+      <div class="actions">
+        ${String(s.id)===String(state.activeSessionId)?'<span class="pill">Aktiv</span>':`<button class="small-btn" data-activate-session="${s.id}">Bruk denne</button>`}
+        <button class="danger small-btn" data-delete-session="${s.id}">Slett</button>
+      </div>
+    </div>
+  `).join('') : `<div class="muted">Ingen timer er opprettet ennå.</div>`;
+}
+function renderAttendanceRows(session){
+  return state.students.map(name=>{
+    const current = session.attendance?.[name] || 'present';
+    return `
+      <div class="attendance-row">
+        <div>
+          <div class="attendance-name">${esc(name)}</div>
+          <div class="attendance-state">${attendanceLabel(current)}</div>
+        </div>
+        <div class="attendance-actions">
+          <button class="small-btn ${current==='present'?'attendance-present':''}" data-attendance-student="${esc(name)}" data-attendance-value="present">Til stede</button>
+          <button class="small-btn ${current==='absent'?'attendance-absent':''}" data-attendance-student="${esc(name)}" data-attendance-value="absent">Fravær</button>
+          <button class="small-btn ${current==='exempt'?'attendance-exempt':''}" data-attendance-student="${esc(name)}" data-attendance-value="exempt">Fritatt</button>
+        </div>
+      </div>`;
+  }).join('');
+}
 
 function renderStudents(){
   const studentSelect = document.getElementById('studentSelect');
   const profileStudent = document.getElementById('profileStudent');
   const current = studentSelect.value;
   const currentProfile = profileStudent.value;
-
-  const options = state.students.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const options = state.students.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
   studentSelect.innerHTML = options;
   profileStudent.innerHTML = options;
-
-  if(state.students.includes(current)) studentSelect.value = current;
-  if(state.students.includes(currentProfile)) profileStudent.value = currentProfile;
-
+  if(state.students.includes(current)) studentSelect.value=current;
+  if(state.students.includes(currentProfile)) profileStudent.value=currentProfile;
   document.getElementById('studentList').innerHTML = state.students.map((name,index)=>`
     <div class="student-row">
       <span>${esc(name)}</span>
       <button class="danger" data-remove-student="${index}">Fjern</button>
     </div>
   `).join('');
-
+  // Ensure existing sessions know new students.
+  state.sessions.forEach(s=>{
+    if(!s.attendance) s.attendance={};
+    state.students.forEach(n=>{ if(!s.attendance[n]) s.attendance[n]='present'; });
+  });
+  saveState();
+  renderLesson();
+  renderRegisterContext();
   renderProfile();
 }
-
 function renderTags(){
-  document.getElementById('quickTags').innerHTML = tags.map((tag,index)=>`
-    <button class="tag-btn ${selectedTags.has(index) ? 'selected' : ''}" data-tag="${index}">
-      ${esc(tag)}
-    </button>
+  document.getElementById('quickTags').innerHTML = state.tags.map((tag,index)=>`
+    <button class="tag-btn ${selectedTags.has(index)?'selected':''}" data-tag="${index}">${esc(tag)}</button>
   `).join('');
 }
 
+function renderTagManager(){
+  const box = document.getElementById('tagManagerList');
+  if(!box) return;
+  box.innerHTML = state.tags.length ? state.tags.map((tag,index)=>`
+    <div class="student-row">
+      <span>${esc(tag)}</span>
+      <button class="danger small-btn" data-remove-tag="${index}">Fjern</button>
+    </div>
+  `).join('') : `<div class="muted">Ingen hurtigobservasjoner er lagt inn.</div>`;
+}
 function renderAssessment(){
-  document.getElementById('assessmentCards').innerHTML = criteria.map(c=>`
+  const session = activeSession();
+  const activeIds = session?.criteria || [];
+  const relevant = criteria.filter(c=>activeIds.includes(c.id));
+  document.getElementById('assessmentCards').innerHTML = relevant.length ? relevant.map(c=>`
     <div class="card">
       <div class="criteria-title">${esc(c.name)}</div>
       <div class="criteria-goal">${esc(c.goal)}</div>
       <div class="level-grid">
         ${levels.map((level,index)=>`
-          <button
-            class="level-btn ${selectedLevels[c.id] === index+1 ? 'selected' : ''}"
-            data-criterion="${c.id}"
-            data-level="${index+1}">
-            ${level}
+          <button class="level-btn ${selectedLevels[c.id]===index+1?'selected':''}" data-level="${index+1}" data-criterion="${c.id}">
+            ${esc(level)}
           </button>
         `).join('')}
       </div>
     </div>
-  `).join('');
+  `).join('') : `<div class="notice warning">Ingen vurderingskriterier er valgt for denne timen.</div>`;
 }
-
-function renderCriteria(){
-  document.getElementById('criteriaList').innerHTML = criteria.map(c=>`
+function renderRegisterContext(){
+  const session = activeSession();
+  const banner = document.getElementById('registerSessionBanner');
+  if(!session){
+    banner.innerHTML = `<div class="notice warning">Du må opprette eller velge en time før du registrerer vurderinger.</div>`;
+    document.getElementById('saveBtn').disabled=true;
+    renderAssessment();
+    return;
+  }
+  banner.innerHTML = `
     <div class="card">
-      <div class="criteria-title">${esc(c.name)}</div>
-      <div class="criteria-goal">${esc(c.goal)}</div>
-      <div style="margin-top:12px">
-        ${c.desc.map((d,index)=>`
-          <div class="level-row">
-            <strong>${levels[index]}</strong>
-            <span>${esc(d)}</span>
-          </div>
-        `).join('')}
+      <div class="session-banner">
+        <div>
+          <div class="small muted">Aktiv time</div>
+          <strong>${esc(session.activity)}</strong>
+          <div class="small muted">${esc(session.date)} · ${session.criteria.map(id=>criteria.find(c=>c.id===id)?.name).filter(Boolean).map(esc).join(' · ')}</div>
+        </div>
+        <button data-go-lesson>Endre time/fravær</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  renderAssessment();
+  updateStudentAttendanceInfo();
 }
-
+function updateStudentAttendanceInfo(){
+  const session = activeSession();
+  const student = document.getElementById('studentSelect').value;
+  const el = document.getElementById('studentAttendanceInfo');
+  const saveBtn = document.getElementById('saveBtn');
+  if(!session || !student){ el.textContent=''; saveBtn.disabled=true; return; }
+  const status = session.attendance?.[student] || 'present';
+  if(status==='absent'){
+    el.textContent='Eleven er registrert med fravær i denne timen og kan derfor ikke vurderes.';
+    saveBtn.disabled=true;
+  }else if(status==='exempt'){
+    el.textContent='Eleven er registrert som fritatt i denne timen og kan derfor ikke vurderes.';
+    saveBtn.disabled=true;
+  }else{
+    el.textContent='Til stede i denne timen.';
+    saveBtn.disabled=false;
+  }
+}
 function resetForm(){
-  selectedLevels = {};
-  selectedTags = new Set();
-  document.getElementById('activityInput').value = '';
-  document.getElementById('noteInput').value = '';
+  selectedLevels={};
+  selectedTags.clear();
+  document.getElementById('noteInput').value='';
   renderTags();
   renderAssessment();
 }
-
 function saveRecord(){
+  const session = activeSession();
   const student = document.getElementById('studentSelect').value;
-  const status = document.getElementById('saveStatus');
-
-  if(!student){
-    status.textContent = 'Velg en elev.';
-    return;
+  const statusEl = document.getElementById('saveStatus');
+  if(!session){ statusEl.textContent='Velg en aktiv time først.'; return; }
+  if(!student){ statusEl.textContent='Velg en elev.'; return; }
+  if((session.attendance?.[student]||'present')!=='present'){ statusEl.textContent='Eleven er ikke registrert som til stede.'; return; }
+  if(Object.keys(selectedLevels).length===0 && selectedTags.size===0 && !document.getElementById('noteInput').value.trim()){
+    statusEl.textContent='Registrer minst én observasjon.'; return;
   }
-
-  if(
-    Object.keys(selectedLevels).length === 0 &&
-    selectedTags.size === 0 &&
-    !document.getElementById('noteInput').value.trim()
-  ){
-    status.textContent = 'Registrer minst én observasjon.';
-    return;
-  }
-
+  const allowed = new Set(session.criteria||[]);
+  const safeLevels = Object.fromEntries(Object.entries(selectedLevels).filter(([id])=>allowed.has(id)));
   state.records.push({
-    id: Date.now(),
-    student,
-    date: document.getElementById('dateInput').value || today(),
-    activity: document.getElementById('activityInput').value.trim() || 'Ikke oppgitt',
-    levels: {...selectedLevels},
-    tags: [...selectedTags].map(i => tags[i]),
-    note: document.getElementById('noteInput').value.trim()
+    id:uid(), sessionId:session.id, student, date:session.date, activity:session.activity,
+    levels:safeLevels, tags:[...selectedTags].map(i=>state.tags[i]).filter(Boolean),
+    note:document.getElementById('noteInput').value.trim()
   });
-
   saveState();
   resetForm();
   renderProfile();
-  status.textContent = 'Observasjonen er lagret.';
+  statusEl.textContent='Observasjonen er lagret.';
 }
 
 function renderProfile(){
   const student = document.getElementById('profileStudent').value || state.students[0];
   if(!student) return;
+  const records = state.records.filter(r=>r.student===student).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  document.getElementById('profileCount').textContent=`${records.length} registrering${records.length===1?'':'er'}`;
 
-  const records = state.records
-    .filter(r => r.student === student)
-    .sort((a,b) => b.date.localeCompare(a.date) || b.id-a.id);
-
-  document.getElementById('profileCount').textContent =
-    `${records.length} registrering${records.length === 1 ? '' : 'er'}`;
-
-  document.getElementById('profileSummary').innerHTML = criteria.map(c=>{
-    const values = records.map(r => r.levels[c.id]).filter(Boolean);
-    const avg = values.length ? values.reduce((a,b)=>a+b,0) / values.length : 0;
-    const label = !values.length ? 'Ingen vurdering' : levels[Math.max(0,Math.min(3,Math.round(avg)-1))];
-
-    return `
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;gap:10px">
-          <strong>${esc(c.name)}</strong>
-          <span>${label}</span>
-        </div>
-        <div class="meter"><span style="width:${avg ? avg/4*100 : 0}%"></span></div>
-        <div class="small muted">
-          ${values.length ? `${values.length} vurderinger · snitt ${avg.toFixed(1)}/4` : 'Mangler vurderingsgrunnlag'}
-        </div>
+  let present=0, absent=0, exempt=0;
+  state.sessions.forEach(s=>{
+    const v=s.attendance?.[student];
+    if(v==='absent') absent++;
+    else if(v==='exempt') exempt++;
+    else if(v==='present') present++;
+  });
+  document.getElementById('attendanceSummary').innerHTML=`
+    <div class="card">
+      <div class="section-title">Oppmøte</div>
+      <div class="grid four">
+        <div><strong>${state.sessions.length}</strong><div class="small muted">registrerte timer</div></div>
+        <div><strong>${present}</strong><div class="small muted">til stede</div></div>
+        <div><strong>${absent}</strong><div class="small muted">fravær</div></div>
+        <div><strong>${exempt}</strong><div class="small muted">fritatt</div></div>
       </div>
-    `;
+      <div class="small muted" style="margin-top:10px">Fravær vises separat og regnes ikke inn i vurderingsnivåene.</div>
+    </div>`;
+
+  document.getElementById('profileSummary').innerHTML=criteria.map(c=>{
+    const values=records.map(r=>r.levels?.[c.id]).filter(Boolean);
+    const avg=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
+    const label=!values.length?'Ingen vurdering':levels[Math.max(0,Math.min(3,Math.round(avg)-1))];
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;gap:10px"><strong>${esc(c.name)}</strong><span>${esc(label)}</span></div>
+      <div class="meter"><span style="width:${avg?avg/4*100:0}%"></span></div>
+      <div class="small muted">${values.length?`${values.length} vurderinger · snitt ${avg.toFixed(1)}/4`:'Mangler vurderingsgrunnlag'}</div>
+    </div>`;
   }).join('');
 
-  document.getElementById('historyList').innerHTML = records.length ? records.map(r=>`
+  document.getElementById('historyList').innerHTML=records.length?records.map(r=>`
     <div class="history-row">
       <div style="min-width:0">
         <strong>${esc(r.activity)}</strong>
         <div class="small muted">${esc(r.date)}</div>
-
-        ${r.tags?.length ? `
-          <div style="margin-top:6px">
-            ${r.tags.map(t=>`<span class="pill">${esc(t)}</span>`).join('')}
-          </div>
-        ` : ''}
-
-        ${Object.keys(r.levels || {}).length ? `
-          <div class="small" style="margin-top:8px">
-            ${Object.entries(r.levels).map(([id,val])=>{
-              const criterion = criteria.find(c=>c.id===id);
-              return `${esc(criterion?.name || id)}: <strong>${levels[val-1]}</strong>`;
-            }).join(' · ')}
-          </div>
-        ` : ''}
-
-        ${r.note ? `<div style="margin-top:8px">${esc(r.note)}</div>` : ''}
+        ${r.tags?.length?`<div style="margin-top:6px">${r.tags.map(t=>`<span class="pill">${esc(t)}</span>`).join('')}</div>`:''}
+        ${Object.keys(r.levels||{}).length?`<div class="small" style="margin-top:8px">${
+          Object.entries(r.levels).map(([id,val])=>{
+            const c=criteria.find(x=>x.id===id);
+            return `${esc(c?.name||id)}: <strong>${esc(levels[val-1])}</strong>`;
+          }).join(' · ')
+        }</div>`:''}
+        ${r.note?`<div style="margin-top:8px">${esc(r.note)}</div>`:''}
       </div>
       <button class="danger" data-delete-record="${r.id}">Slett</button>
     </div>
-  `).join('') : `<div class="muted">Ingen observasjoner registrert ennå.</div>`;
+  `).join(''):`<div class="muted">Ingen observasjoner registrert ennå.</div>`;
 }
-
+function renderCriteria(){
+  document.getElementById('criteriaList').innerHTML=criteria.map(c=>`
+    <div class="card">
+      <div class="criteria-title">${esc(c.name)}</div>
+      <div class="criteria-goal">${esc(c.goal)}</div>
+      <div style="margin-top:10px">
+        ${levels.map((l,i)=>`<div class="level-row"><strong>${esc(l)}</strong><div>${esc(c.desc[i])}</div></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
 function exportData(){
-  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `fah-vurderingsverktoy-${today()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`fah-vurderingsverktoy-${today()}.json`;
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
-
 function importData(file){
-  const reader = new FileReader();
-  reader.onload = ()=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
     try{
-      const parsed = JSON.parse(reader.result);
-      if(!Array.isArray(parsed.students) || !Array.isArray(parsed.records)){
-        alert('Filen har ikke riktig format.');
-        return;
-      }
-      state = parsed;
-      saveState();
-      renderStudents();
-      renderProfile();
-      alert('Data er importert.');
-    }catch{
-      alert('Kunne ikke lese filen.');
-    }
+      const parsed=JSON.parse(reader.result);
+      if(!Array.isArray(parsed.students)||!Array.isArray(parsed.records)){alert('Filen har ikke riktig format.');return;}
+      if(!Array.isArray(parsed.sessions)) parsed.sessions=[];
+      state=parsed;saveState();renderStudents();renderLesson();renderProfile();alert('Data er importert.');
+    }catch{alert('Kunne ikke lese filen.');}
   };
   reader.readAsText(file);
 }
 
-document.addEventListener('click', e=>{
-  const tab = e.target.closest('.tab');
-  if(tab){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(tab.dataset.tab).classList.add('active');
-    if(tab.dataset.tab === 'profile') renderProfile();
-  }
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');
+  if(tab){setTab(tab.dataset.tab);return;}
 
-  const levelBtn = e.target.closest('[data-level]');
+  if(e.target.closest('[data-go-register]')){setTab('register');return;}
+  if(e.target.closest('[data-go-lesson]')){setTab('lesson');return;}
+
+  const levelBtn=e.target.closest('[data-level]');
   if(levelBtn){
-    const id = levelBtn.dataset.criterion;
-    const val = Number(levelBtn.dataset.level);
-    selectedLevels[id] = selectedLevels[id] === val ? undefined : val;
-    if(selectedLevels[id] === undefined) delete selectedLevels[id];
-    renderAssessment();
+    const id=levelBtn.dataset.criterion,val=Number(levelBtn.dataset.level);
+    selectedLevels[id]=selectedLevels[id]===val?undefined:val;
+    if(selectedLevels[id]===undefined) delete selectedLevels[id];
+    renderAssessment();return;
   }
-
-  const tagBtn = e.target.closest('[data-tag]');
+  const tagBtn=e.target.closest('[data-tag]');
   if(tagBtn){
-    const index = Number(tagBtn.dataset.tag);
-    selectedTags.has(index) ? selectedTags.delete(index) : selectedTags.add(index);
-    renderTags();
+    const index=Number(tagBtn.dataset.tag);
+    selectedTags.has(index)?selectedTags.delete(index):selectedTags.add(index);
+    renderTags();return;
+  }
+  const att=e.target.closest('[data-attendance-student]');
+  if(att){
+    const s=activeSession();if(!s)return;
+    s.attendance[att.dataset.attendanceStudent]=att.dataset.attendanceValue;
+    saveState();renderLesson();updateStudentAttendanceInfo();renderProfile();return;
+  }
+  const activate=e.target.closest('[data-activate-session]');
+  if(activate){
+    state.activeSessionId=Number(activate.dataset.activateSession);saveState();resetForm();renderLesson();renderRegisterContext();return;
+  }
+  const delSession=e.target.closest('[data-delete-session]');
+  if(delSession){
+    const id=Number(delSession.dataset.deleteSession);
+    const s=state.sessions.find(x=>x.id===id);
+    if(confirm(`Slette timen "${s?.activity||''}"? Vurderinger som allerede er lagret blir beholdt.`)){
+      state.sessions=state.sessions.filter(x=>x.id!==id);
+      if(String(state.activeSessionId)===String(id))state.activeSessionId=null;
+      saveState();renderLesson();renderRegisterContext();renderProfile();
+    }
+    return;
+  }
+  const removeTag=e.target.closest('[data-remove-tag]');
+  if(removeTag){
+    const index=Number(removeTag.dataset.removeTag);
+    const tag=state.tags[index];
+    if(confirm(`Fjerne hurtigobservasjonen "${tag}"?`)){
+      state.tags.splice(index,1);
+      selectedTags.clear();
+      saveState();
+      renderTags();
+      renderTagManager();
+    }
+    return;
   }
 
-  const removeBtn = e.target.closest('[data-remove-student]');
-  if(removeBtn){
-    if(state.students.length <= 1){
-      alert('Du må ha minst én elev i listen.');
-      return;
-    }
-    const index = Number(removeBtn.dataset.removeStudent);
-    const name = state.students[index];
+  const remove=e.target.closest('[data-remove-student]');
+  if(remove){
+    if(state.students.length<=1){alert('Du må ha minst én elev i listen.');return;}
+    const index=Number(remove.dataset.removeStudent),name=state.students[index];
     if(confirm(`Fjerne ${name} og alle registreringer for eleven?`)){
       state.students.splice(index,1);
-      state.records = state.records.filter(r=>r.student!==name);
-      saveState();
-      renderStudents();
+      state.records=state.records.filter(r=>r.student!==name);
+      state.sessions.forEach(s=>{if(s.attendance)delete s.attendance[name];});
+      saveState();renderStudents();
     }
+    return;
   }
-
-  const deleteBtn = e.target.closest('[data-delete-record]');
-  if(deleteBtn){
-    const id = Number(deleteBtn.dataset.deleteRecord);
-    if(confirm('Slette denne observasjonen?')){
-      state.records = state.records.filter(r=>r.id!==id);
-      saveState();
-      renderProfile();
-    }
+  const delRecord=e.target.closest('[data-delete-record]');
+  if(delRecord){
+    const id=Number(delRecord.dataset.deleteRecord);
+    if(confirm('Slette denne observasjonen?')){state.records=state.records.filter(r=>r.id!==id);saveState();renderProfile();}
   }
 });
 
-document.getElementById('saveBtn').addEventListener('click', saveRecord);
-
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  resetForm();
-  document.getElementById('saveStatus').textContent = 'Skjemaet er nullstilt.';
+document.getElementById('createLessonBtn').addEventListener('click',createLesson);
+document.getElementById('selectCommonBtn').addEventListener('click',()=>{
+  const common=new Set(['effort','development','independence','cooperation','movement']);
+  document.querySelectorAll('#lessonCriteria input').forEach(x=>x.checked=common.has(x.value));
 });
-
-document.getElementById('profileStudent').addEventListener('change', renderProfile);
-
-document.getElementById('addStudentsBtn').addEventListener('click', ()=>{
-  const values = document.getElementById('studentInput').value
-    .split(/\n|,/)
-    .map(x=>x.trim())
-    .filter(Boolean);
-
-  if(!values.length) return;
-
-  if(state.students.length === 1 && state.students[0] === 'Eksempel elev' && state.records.length === 0){
-    state.students = [];
+document.getElementById('selectAllBtn').addEventListener('click',()=>document.querySelectorAll('#lessonCriteria input').forEach(x=>x.checked=true));
+document.getElementById('clearCriteriaBtn').addEventListener('click',()=>document.querySelectorAll('#lessonCriteria input').forEach(x=>x.checked=false));
+document.getElementById('saveBtn').addEventListener('click',saveRecord);
+document.getElementById('resetBtn').addEventListener('click',()=>{resetForm();document.getElementById('saveStatus').textContent='Vurderingen er nullstilt.';});
+document.getElementById('studentSelect').addEventListener('change',updateStudentAttendanceInfo);
+document.getElementById('profileStudent').addEventListener('change',renderProfile);
+document.getElementById('addStudentsBtn').addEventListener('click',()=>{
+  const values=document.getElementById('studentInput').value.split(/\n|,/).map(x=>x.trim()).filter(Boolean);
+  if(!values.length)return;
+  if(state.students.length===1&&state.students[0]==='Eksempel elev'&&state.records.length===0&&state.sessions.length===0)state.students=[];
+  values.forEach(v=>{if(!state.students.includes(v))state.students.push(v);});
+  document.getElementById('studentInput').value='';saveState();renderStudents();
+});
+document.getElementById('addTagBtn').addEventListener('click',()=>{
+  const input=document.getElementById('newTagInput');
+  const value=input.value.trim();
+  if(!value) return;
+  if(state.tags.some(t=>t.toLowerCase()===value.toLowerCase())){
+    alert('Denne hurtigobservasjonen finnes allerede.');
+    return;
   }
-
-  values.forEach(v=>{
-    if(!state.students.includes(v)) state.students.push(v);
-  });
-
-  document.getElementById('studentInput').value = '';
+  state.tags.push(value);
+  input.value='';
   saveState();
-  renderStudents();
+  renderTags();
+  renderTagManager();
 });
 
-document.getElementById('exportBtn').addEventListener('click', exportData);
-document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
-document.getElementById('importFile').addEventListener('change', e=>{
-  const file = e.target.files[0];
-  if(file) importData(file);
-  e.target.value = '';
+document.getElementById('newTagInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    document.getElementById('addTagBtn').click();
+  }
 });
 
+document.getElementById('resetTagsBtn').addEventListener('click',()=>{
+  if(confirm('Tilbakestille hurtigobservasjonene til standardlisten?')){
+    state.tags=[...DEFAULT_TAGS];
+    selectedTags.clear();
+    saveState();
+    renderTags();
+    renderTagManager();
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click',exportData);
+document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',e=>{const file=e.target.files[0];if(file)importData(file);e.target.value='';});
+
+document.getElementById('lessonDate').value=today();
+renderLessonCriteria();
 renderStudents();
 renderTags();
+renderTagManager();
 renderAssessment();
 renderCriteria();
 renderProfile();
+renderLesson();
+renderRegisterContext();
 </script>
 </body>
 </html>
