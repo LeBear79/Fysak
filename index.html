@@ -114,6 +114,7 @@
     <button class="tab active" data-tab="lesson">Time</button>
     <button class="tab" data-tab="register">Registrer</button>
     <button class="tab" data-tab="profile">Elevprofil</button>
+    <button class="tab" data-tab="absence">Fraværsoversikt</button>
     <button class="tab" data-tab="criteria">Kriterier</button>
     <button class="tab" data-tab="students">Elever</button>
   </nav>
@@ -185,7 +186,7 @@
         <label><span>Velg elev</span><select id="profileStudent"></select></label>
         <div>
           <div class="section-title">Vurderingsgrunnlag</div>
-          <div id="profileCount" class="muted"></div>
+          <div id="profileCount" class="muted"></div><div class="actions" style="margin-top:10px"><button id="printProfileBtn">Skriv ut elevvurdering</button></div>
         </div>
       </div>
     </div>
@@ -197,6 +198,11 @@
       <div class="section-title">Historikk</div>
       <div id="historyList"></div>
     </div>
+  </section>
+
+  <section id="absence" class="panel">
+    <div class="card"><div class="section-title">Fraværsoversikt</div><div class="muted small">Fravær vises separat fra vurdering. Fritak regnes ikke som fravær.</div></div>
+    <div class="card"><div id="absenceOverview"></div></div>
   </section>
 
   <section id="criteria" class="panel">
@@ -405,6 +411,7 @@ function setTab(id){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
   document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===id));
   if(id==='profile') renderProfile();
+  if(id==='absence') renderAbsenceOverview();
   if(id==='lesson') renderLesson();
   if(id==='register') renderRegisterContext();
 }
@@ -692,6 +699,31 @@ function renderProfile(){
     </div>
   `).join(''):`<div class="muted">Ingen observasjoner registrert ennå.</div>`;
 }
+
+function renderAbsenceOverview(){
+  const box=document.getElementById('absenceOverview'); if(!box)return;
+  const rows=state.students.map(student=>{
+    let present=0,absent=0,exempt=0;
+    state.sessions.forEach(s=>{const v=s.attendance?.[student];if(v==='absent')absent++;else if(v==='exempt')exempt++;else if(v==='present')present++;});
+    const basis=present+absent, pct=basis?absent/basis*100:0;
+    return {student,present,absent,exempt,pct,total:basis+exempt};
+  }).sort((a,b)=>b.absent-a.absent||a.student.localeCompare(b.student,'nb'));
+  box.innerHTML=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:620px">
+  <thead><tr><th style="text-align:left;padding:10px;border-bottom:2px solid var(--border)">Elev</th><th>Timer</th><th>Til stede</th><th>Fravær</th><th>Fravær %</th><th>Fritatt</th></tr></thead>
+  <tbody>${rows.map(r=>`<tr><td style="padding:10px;border-bottom:1px solid var(--border)"><strong>${esc(r.student)}</strong></td><td style="text-align:center">${r.total}</td><td style="text-align:center">${r.present}</td><td style="text-align:center"><strong>${r.absent}</strong></td><td style="text-align:center">${r.pct.toFixed(1)} %</td><td style="text-align:center">${r.exempt}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function printStudentProfile(){
+  const student=document.getElementById('profileStudent').value||state.students[0]; if(!student)return;
+  const records=state.records.filter(r=>r.student===student).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  let present=0,absent=0,exempt=0;
+  state.sessions.forEach(s=>{const v=s.attendance?.[student];if(v==='absent')absent++;else if(v==='exempt')exempt++;else if(v==='present')present++;});
+  const rows=criteria.map(c=>{const vals=records.map(r=>r.levels?.[c.id]).filter(Boolean);const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;const label=!vals.length?'Mangler vurderingsgrunnlag':levels[Math.max(0,Math.min(3,Math.round(avg)-1))];return `<tr><td>${esc(c.name)}</td><td>${esc(label)}</td><td>${vals.length}</td></tr>`}).join('');
+  const hist=records.length?records.map(r=>`<div class="record"><strong>${esc(r.date)} – ${esc(r.activity)}</strong>${Object.keys(r.levels||{}).length?`<div>${Object.entries(r.levels).map(([id,val])=>`${esc(criteria.find(x=>x.id===id)?.name||id)}: ${esc(levels[val-1])}`).join(' · ')}</div>`:''}${r.tags?.length?`<div>Observasjoner: ${r.tags.map(esc).join(', ')}</div>`:''}${r.note?`<div>Notat: ${esc(r.note)}</div>`:''}</div>`).join(''):'<p>Ingen observasjoner registrert.</p>';
+  const w=window.open('','_blank'); if(!w){alert('Tillat popup-vinduer for å skrive ut.');return;}
+  w.document.write(`<!doctype html><html lang="no"><head><meta charset="utf-8"><title>Elevvurdering – ${esc(student)}</title><style>body{font-family:Arial,sans-serif;color:#111;margin:32px;line-height:1.4}h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}.muted{color:#555}.summary{display:flex;gap:28px;margin:18px 0}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #ccc}th{border-bottom:2px solid #555}.record{padding:10px 0;border-bottom:1px solid #ddd;font-size:14px}@media print{body{margin:15mm}.no-print{display:none}}</style></head><body><h1>Elevvurdering – Fysisk aktivitet og helse</h1><div class="muted">Elev: ${esc(student)}</div><div class="summary"><div><strong>${records.length}</strong><br>registreringer</div><div><strong>${present}</strong><br>til stede</div><div><strong>${absent}</strong><br>fravær</div><div><strong>${exempt}</strong><br>fritatt</div></div><h2>Vurderingsoversikt</h2><table><thead><tr><th>Kriterium</th><th>Samlet nivåindikasjon</th><th>Registreringer</th></tr></thead><tbody>${rows}</tbody></table><p class="muted" style="font-size:12px">Nivåindikasjonene er støtte for lærerens profesjonelle vurdering og er ikke en automatisk karakter.</p><h2>Registrerte observasjoner</h2>${hist}<div class="no-print" style="margin-top:24px"><button onclick="window.print()">Skriv ut / lagre som PDF</button></div></body></html>`);
+  w.document.close();w.focus();
+}
+
 function renderCriteria(){
   document.getElementById('criteriaList').innerHTML=criteria.map(c=>`
     <div class="card">
@@ -808,6 +840,7 @@ document.getElementById('saveBtn').addEventListener('click',saveRecord);
 document.getElementById('resetBtn').addEventListener('click',()=>{resetForm();document.getElementById('saveStatus').textContent='Vurderingen er nullstilt.';});
 document.getElementById('studentSelect').addEventListener('change',updateStudentAttendanceInfo);
 document.getElementById('profileStudent').addEventListener('change',renderProfile);
+document.getElementById('printProfileBtn').addEventListener('click',printStudentProfile);
 document.getElementById('addStudentsBtn').addEventListener('click',()=>{
   const values=document.getElementById('studentInput').value.split(/\n|,/).map(x=>x.trim()).filter(Boolean);
   if(!values.length)return;
@@ -859,6 +892,7 @@ renderTagManager();
 renderAssessment();
 renderCriteria();
 renderProfile();
+renderAbsenceOverview();
 renderLesson();
 renderRegisterContext();
 </script>
