@@ -26,26 +26,18 @@
       <div id="registerRoster" class="roster-table" style="margin-top:12px"></div>
     </div>
     <div id="registerEditor" class="register-editor" hidden>
-      <div class="card">
-        <div class="editor-head">
-          <div>
-            <div class="small muted">Vurderer elev</div>
-            <div id="selectedStudentHeading" class="section-title" style="margin:2px 0 0"></div>
-            <div id="studentAttendanceInfo" class="small muted" style="margin-top:4px"></div>
-          </div>
-          <button id="closeRegisterEditorBtn">Lukk</button>
+      <div class="student-inline">
+        <div class="student-inline-main">
+          <strong id="selectedStudentHeading"></strong>
+          <span id="studentAttendanceInfo" class="small muted"></span>
         </div>
-      </div>
-      <div class="card">
-        <div class="section-title">Hurtigobservasjoner</div>
-        <div class="muted small" style="margin-bottom:10px">Velg alle observasjonene som passer for denne timen.</div>
-        <div id="quickTags" class="tags"></div>
+        <button id="closeRegisterEditorBtn" class="small-btn">Lukk</button>
       </div>
       <div id="assessmentCards"></div>
-      <div class="card">
+      <div class="card compact-note-card">
         <label><span>Egen kommentar</span><textarea id="noteInput" placeholder="Kort individuell kommentar til eleven..."></textarea></label>
       </div>
-      <div class="actions">
+      <div class="actions register-save-actions">
         <button id="saveBtn" class="primary">Lagre observasjon</button>
         <button id="resetBtn">Nullstill vurdering</button>
         <span id="saveStatus" class="status" aria-live="polite"></span>
@@ -54,6 +46,11 @@
 
   let openStudent=null;
   let selectedCriteriaMarks=new Set();
+
+  const exportBtn=document.getElementById('exportBtn');
+  const importBtn=document.getElementById('importBtn');
+  if(exportBtn){exportBtn.textContent='Last ned sikkerhetskopi';exportBtn.title='Lagre alle elever, timer, fravær og vurderinger i en sikkerhetskopi';}
+  if(importBtn){importBtn.textContent='Last inn sikkerhetskopi';importBtn.title='Gjenopprett data fra en tidligere sikkerhetskopi';}
 
   const fillStudentSelect=()=>{
     const sel=document.getElementById('studentSelect');
@@ -91,12 +88,6 @@
     box.innerHTML=`<div class="roster-head"><div>Elev</div><div>Status</div><div>Observasjoner</div><div>Vurdering</div></div>${rows||'<div class="muted" style="padding:14px">Ingen elever funnet.</div>'}`;
   };
 
-  renderTags=function(){
-    const box=document.getElementById('quickTags');
-    if(!box) return;
-    box.innerHTML=state.tags.map((tag,index)=>`<button class="tag-btn ${selectedTags.has(index)?'selected':''}" data-tag="${index}">${esc(tag)}</button>`).join('');
-  };
-
   renderAssessment=function(){
     const session=activeSession();
     const activeIds=session?.criteria||[];
@@ -124,8 +115,8 @@
     if(!el||!btn) return;
     if(!session||!student){el.textContent='';btn.disabled=true;return;}
     const status=session.attendance?.[student]||'present';
-    if(status==='absent'){el.textContent='Fravær – eleven kan ikke vurderes i denne timen.';btn.disabled=true;}
-    else if(status==='exempt'){el.textContent='Fritatt – eleven kan ikke vurderes i denne timen.';btn.disabled=true;}
+    if(status==='absent'){el.textContent='Fravær – kan ikke vurderes';btn.disabled=true;}
+    else if(status==='exempt'){el.textContent='Fritatt – kan ikke vurderes';btn.disabled=true;}
     else{el.textContent='Til stede';btn.disabled=false;}
   };
 
@@ -151,7 +142,6 @@
     if(editor) editor.hidden=false;
     const heading=document.getElementById('selectedStudentHeading');
     if(heading) heading.textContent=openStudent;
-    renderTags();
     renderAssessment();
     updateStudentAttendanceInfo();
   };
@@ -171,14 +161,14 @@
     if(!student){if(statusEl)statusEl.textContent='Velg en elev.';return;}
     if((session.attendance?.[student]||'present')!=='present'){if(statusEl)statusEl.textContent='Eleven er ikke registrert som til stede.';return;}
     const note=document.getElementById('noteInput')?.value.trim()||'';
-    if(selectedCriteriaMarks.size===0&&selectedTags.size===0&&!note){if(statusEl)statusEl.textContent='Marker minst ett kriterium, en hurtigobservasjon eller skriv et notat.';return;}
+    if(selectedCriteriaMarks.size===0&&!note){if(statusEl)statusEl.textContent='Marker minst ett kriterium eller skriv et notat.';return;}
     const criteriaMarks=[...selectedCriteriaMarks].map(key=>{
       const sep=key.indexOf('::');
       return {criterionId:key.slice(0,sep),text:key.slice(sep+2)};
     });
     state.records.push({
       id:uid(),sessionId:session.id,student,date:session.date,activity:session.activity,
-      levels:{},criteriaMarks,tags:[...selectedTags].map(i=>state.tags[i]).filter(Boolean),note
+      levels:{},criteriaMarks,tags:[],note
     });
     saveState();
     resetForm();
@@ -223,7 +213,7 @@
         const unique=[...new Set(marks)];
         return `<tr><td>${esc(c.name)}</td><td>${unique.length?unique.map(m=>`✓ ${esc(m)}`).join('<br>'):'Mangler vurderingsgrunnlag'}</td></tr>`;
       }).join('');
-      const history=records.length?records.map(r=>`<div class="record"><strong>${esc(r.date)} – ${esc(r.activity)}</strong>${r.criteriaMarks?.length?`<div>${r.criteriaMarks.map(m=>`✓ ${esc(m.text)}`).join('<br>')}</div>`:''}${r.tags?.length?`<div>Hurtigobservasjoner: ${r.tags.map(esc).join(', ')}</div>`:''}${r.note?`<div>Notat: ${esc(r.note)}</div>`:''}</div>`).join(''):'<p>Ingen observasjoner registrert.</p>';
+      const history=records.length?records.map(r=>`<div class="record"><strong>${esc(r.date)} – ${esc(r.activity)}</strong>${r.criteriaMarks?.length?`<div>${r.criteriaMarks.map(m=>`✓ ${esc(m.text)}`).join('<br>')}</div>`:''}${r.tags?.length?`<div>Tidligere hurtigobservasjoner: ${r.tags.map(esc).join(', ')}</div>`:''}${r.note?`<div>Notat: ${esc(r.note)}</div>`:''}</div>`).join(''):'<p>Ingen observasjoner registrert.</p>';
       const w=window.open('','_blank');
       if(!w){alert('Nettleseren blokkerte utskriftsvinduet. Tillat popup-vinduer og prøv igjen.');return;}
       w.document.write(`<!doctype html><html lang="no"><head><meta charset="utf-8"><title>Elevvurdering – ${esc(student)}</title><style>body{font-family:Arial,sans-serif;color:#111;margin:32px;line-height:1.4}h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}.muted{color:#555}.summary{display:flex;gap:28px;margin:18px 0}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid #ccc}th{border-bottom:2px solid #555}.record{padding:10px 0;border-bottom:1px solid #ddd;font-size:14px}@media print{body{margin:15mm}.no-print{display:none}}</style></head><body><h1>Elevvurdering – Fysisk aktivitet og helse</h1><div class="muted">Elev: ${esc(student)}</div><div class="summary"><div><strong>${records.length}</strong><br>registreringer</div><div><strong>${present}</strong><br>til stede</div><div><strong>${absent}</strong><br>fravær</div><div><strong>${exempt}</strong><br>fritatt</div></div><h2>Vurderingskriterier som er observert</h2><table><thead><tr><th>Område</th><th>Markerte kriterier</th></tr></thead><tbody>${rows}</tbody></table><h2>Registrerte observasjoner</h2>${history}<div class="no-print" style="margin-top:24px"><button onclick="window.print()">Skriv ut / lagre som PDF</button></div></body></html>`);
@@ -238,7 +228,7 @@
       openStudent=openStudent===name?null:name;
       resetForm();
       renderRegisterContext();
-      if(openStudent) setTimeout(()=>document.getElementById('registerEditor')?.scrollIntoView({behavior:'smooth',block:'start'}),40);
+      if(openStudent) setTimeout(()=>document.getElementById('registerEditor')?.scrollIntoView({behavior:'smooth',block:'nearest'}),40);
       return;
     }
     const mark=e.target.closest('[data-criterion-mark]');
@@ -258,7 +248,7 @@
   renderStudents=function(){originalRenderStudents();fillStudentSelect();renderRoster();};
 
   const subtitle=document.querySelector('#mainApp header .subtitle');
-  if(subtitle&&!subtitle.textContent.includes('v2.4')) subtitle.textContent=subtitle.textContent.replace(/ · v\d+(\.\d+)*/g,'')+' · v2.4';
+  if(subtitle&&!subtitle.textContent.includes('v2.5')) subtitle.textContent=subtitle.textContent.replace(/ · v\d+(\.\d+)*/g,'')+' · v2.5';
 
   fillStudentSelect();
   renderRegisterContext();
