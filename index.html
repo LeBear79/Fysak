@@ -11,7 +11,7 @@
   </style>
 </head>
 <body>
-  <iframe id="app" src="app-core.html?v=25" title="FAH – vurderingsverktøy"></iframe>
+  <iframe id="app" src="app-core.html?v=26" title="FAH – vurderingsverktøy"></iframe>
   <script>
     const frame=document.getElementById('app');
     frame.addEventListener('load',()=>{
@@ -19,14 +19,14 @@
         const d=frame.contentDocument;
         const css=d.createElement('link');
         css.rel='stylesheet';
-        css.href='lab-layout.css?v=25';
+        css.href='lab-layout.css?v=26';
         d.head.appendChild(css);
 
         const js=d.createElement('script');
-        js.src='lab-layout.js?v=25';
+        js.src='lab-layout.js?v=26';
         js.onload=()=>{
           const printJs=d.createElement('script');
-          printJs.src='print-sheet.js?v=25';
+          printJs.src='print-sheet.js?v=26';
           d.body.appendChild(printJs);
         };
         d.body.appendChild(js);
